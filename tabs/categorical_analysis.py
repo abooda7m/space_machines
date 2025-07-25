@@ -1,25 +1,30 @@
-# Categorical Analysis Tab
+# tabs/categorical_analysis.py
+
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from babel.numbers import format_decimal
 
+    
+
     # Fancy card component
-def fancy_card(title: str, value: str, color: str = "#f9f9f9"):
+def fancy_card(title: str, value: str, color: str = "#112841"):
     st.markdown(f"""
-        <div style="background-color: {color}; padding: 10px; border-radius: 16px; 
-                    text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px;">
-            <h3 style="margin: 0; color: #111;">{title}</h3>
-            <h5 style="margin: 0; color: #444;">{value}</h5>
+        <div style="background-color: {color}; padding: 15px; border-radius: 16px; 
+                    text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.25); 
+                    border: 1px solid #33475b; margin-bottom: 12px;">
+            <h3 style="margin: 0; color: #ffffff; font-weight: 600;">{title}</h3>
+            <h5 style="margin: 0; color: #5fa8d3;">{value}</h5>
         </div>
     """, unsafe_allow_html=True)
+    
 
 # Render function
 def render(df):
     st.header("📊 Categorical Analysis")
 
-    # 🚀 Launch Vehicles Overview (Fancy Cards)
-    st.subheader("🚀 Launch Vehicles Overview")
+    #  Launch Vehicles Overview (Fancy Cards)
+    st.subheader(" Launch Vehicles Overview")
     launch_counts = df["Launch Vehicle"].value_counts().reset_index()
     launch_counts.columns = ["Launch Vehicle", "Count"]
     cols = st.columns(min(4, len(launch_counts)))
@@ -27,8 +32,8 @@ def render(df):
         with cols[idx % 4]:
             fancy_card(row["Launch Vehicle"], f"{row['Count']} Missions")
 
-    # 🎯 Mission Types Overview (Fancy Cards)
-    st.subheader("🎯 Mission Types Overview")
+    #  Mission Types Overview (Fancy Cards)
+    st.subheader(" Mission Types Overview")
     mission_counts = df["Mission Type"].value_counts().reset_index()
     mission_counts.columns = ["Mission Type", "Count"]
     cols2 = st.columns(min(4, len(mission_counts)))
@@ -86,7 +91,7 @@ def render(df):
         formatted_cost = f"${format_decimal(total_cost, format='#,##0.00')} Billion"
         st.markdown(
             f"""
-            <div style="background-color:#cbe58e; padding:25px; border-radius:10px; text-align:center;">
+            <div style="background-color:#79bbe2; padding:25px; border-radius:10px; text-align:center;">
                 <h5 style="margin-bottom:10px;">💰 Total Mission Cost</h5>
                 <p style="font-size:24px; font-weight:bold; color:#333;">{formatted_cost}</p>
             </div>
