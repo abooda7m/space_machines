@@ -1,10 +1,100 @@
-# tabs/categorical_analysis.py
-
+# Categorical Analysis Tab
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
+from babel.numbers import format_decimal
 
+    # Fancy card component
+def fancy_card(title: str, value: str, color: str = "#f9f9f9"):
+    st.markdown(f"""
+        <div style="background-color: {color}; padding: 10px; border-radius: 16px; 
+                    text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px;">
+            <h3 style="margin: 0; color: #111;">{title}</h3>
+            <h5 style="margin: 0; color: #444;">{value}</h5>
+        </div>
+    """, unsafe_allow_html=True)
+
+# Render function
 def render(df):
     st.header("📊 Categorical Analysis")
+
+    # 🚀 Launch Vehicles Overview (Fancy Cards)
+    st.subheader("🚀 Launch Vehicles Overview")
+    launch_counts = df["Launch Vehicle"].value_counts().reset_index()
+    launch_counts.columns = ["Launch Vehicle", "Count"]
+    cols = st.columns(min(4, len(launch_counts)))
+    for idx, row in launch_counts.iterrows():
+        with cols[idx % 4]:
+            fancy_card(row["Launch Vehicle"], f"{row['Count']} Missions")
+
+    # 🎯 Mission Types Overview (Fancy Cards)
+    st.subheader("🎯 Mission Types Overview")
+    mission_counts = df["Mission Type"].value_counts().reset_index()
+    mission_counts.columns = ["Mission Type", "Count"]
+    cols2 = st.columns(min(4, len(mission_counts)))
+    for idx, row in mission_counts.iterrows():
+        with cols2[idx % 4]:
+            fancy_card(row["Mission Type"], f"{row['Count']} Missions")
+
+    st.markdown("---")
+
+    # 📊 Mission Success & Failure Rates (Indicators)
+    st.subheader("📊 Mission Success & Failure Rates")
+    success_rate = df["Mission Success (%)"].mean()
+    failure_rate = 100 - success_rate
+
+    col1, col2, col3 = st.columns([1, 1, 1])
+
+    with col1:
+        fig_success = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=success_rate,
+            number={"suffix": "%", "font": {"size": 36, "color": "green"}},
+            gauge={
+                "axis": {"range": [0, 100]},
+                "bar": {"color": "green"},
+                "bgcolor": "white",
+                "borderwidth": 2,
+                "bordercolor": "gray"
+            },
+            domain={'x': [0, 1], 'y': [0, 1]},
+            title={'text': "✅ Success Rate", "font": {"size": 18}}
+        ))
+        fig_success.update_layout(height=250, margin=dict(t=30, b=0))
+        st.plotly_chart(fig_success, use_container_width=True)
+
+    with col2:
+        fig_failure = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=failure_rate,
+            number={"suffix": "%", "font": {"size": 36, "color": "red"}},
+            gauge={
+                "axis": {"range": [0, 100]},
+                "bar": {"color": "red"},
+                "bgcolor": "white",
+                "borderwidth": 2,
+                "bordercolor": "gray"
+            },
+            domain={'x': [0, 1], 'y': [0, 1]},
+            title={'text': "❌ Failure Rate", "font": {"size": 18}}
+        ))
+        fig_failure.update_layout(height=250, margin=dict(t=30, b=0))
+        st.plotly_chart(fig_failure, use_container_width=True)
+
+    with col3:
+        total_cost = df["Mission Cost (billion USD)"].sum()
+        formatted_cost = f"${format_decimal(total_cost, format='#,##0.00')} Billion"
+        st.markdown(
+            f"""
+            <div style="background-color:#cbe58e; padding:25px; border-radius:10px; text-align:center;">
+                <h5 style="margin-bottom:10px;">💰 Total Mission Cost</h5>
+                <p style="font-size:24px; font-weight:bold; color:#333;">{formatted_cost}</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown("---")
 
     # 1. Missions by Target Type (Bar)
     st.subheader("🔭 Missions by Target Type")
@@ -17,16 +107,7 @@ def render(df):
     )
     st.plotly_chart(fig1, use_container_width=True)
 
-    # 2. Most Used Launch Vehicles
-    st.subheader("🚀 Most Used Launch Vehicles")
-    vehicle_counts = df["Launch Vehicle"].value_counts().sort_values(ascending=False).nlargest(10)
-    fig2 = px.bar(
-        x=vehicle_counts.index,
-        y=vehicle_counts.values,
-        labels={"x": "Launch Vehicle", "y": "Number of Missions"},
-        title="Top 10 Launch Vehicles"
-    )
-    st.plotly_chart(fig2, use_container_width=True)
+
 
     # 3. Mission Types Over the Years
     st.subheader("📅 Missions by Type Over the Years")
@@ -67,3 +148,7 @@ def render(df):
         hole=0.3
     )
     st.plotly_chart(fig5, use_container_width=True)
+
+
+
+

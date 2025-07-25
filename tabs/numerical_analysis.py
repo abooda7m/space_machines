@@ -76,29 +76,7 @@ def render(df):
     )
     st.plotly_chart(fig4, use_container_width=True)
     
-    
-    # -------------------------------------------------------
-    # 2. Average Mission Cost per Year
-    # -------------------------------------------------------
-    st.subheader("💸 Average Mission Cost per Year")
-    df_sorted = df.sort_values("Launch Date")
-    df_sorted["Launch Year"] = df_sorted["Launch Date"].dt.year
-    avg_cost_per_year = df_sorted.groupby("Launch Year")["Mission Cost (billion USD)"].mean().reset_index()
-
-    fig2 = px.line(
-        avg_cost_per_year,
-        x="Launch Year",
-        y="Mission Cost (billion USD)",
-        markers=True,
-        title="Avg. Mission Cost per Year",
-        labels={"Mission Cost (billion USD)": "Avg Cost (Billion USD)"}
-    )
-    fig2.update_layout(
-        xaxis_title="Year",
-        yaxis_title="Avg Cost (Billion USD)",
-        yaxis_tickformat="$,.2f"
-    )
-    st.plotly_chart(fig2, use_container_width=True)
+  
 
     # -------------------------------------------------------
     # 5. Avg Scientific Yield vs Mission Duration (Rounded)
