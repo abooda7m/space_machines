@@ -75,6 +75,10 @@ def load_data():
     #This shows how efficient the mission is in terms of scientific return per year of operation.
     # Calculate scientific productivity rate
     df_clean['Scientific Yield per Year'] = df_clean['Scientific Yield (points)'] / df_clean['Mission Duration (years)']
+    df_clean['Duration Year'] = df_clean['Mission Duration (years)'].round()
+    df_clean["Crew Group"] = (df_clean["Crew Size"] // 10) * 10
+
+
 
     # Combine cleaning logs
     cleaning_log = pd.concat(logs) if logs else pd.DataFrame()
@@ -85,5 +89,36 @@ def load_data():
     if row['Crew Size'] > 0 else np.nan,
     axis=1
     )
+    
+    
+    for col in numeric_cols:
+        if col in df_clean.columns:
+            Q1 = df_clean[col].quantile(0.25)
+            Q3 = df_clean[col].quantile(0.75)
+            IQR = Q3 - Q1
+            lower = Q1 - 1.5 * IQR
+            upper = Q3 + 1.5 * IQR
+            median = df_clean[col].median()
+            is_outlier = (df_clean[col] < lower) | (df_clean[col] > upper)
+            if is_outlier.sum() > 0:
+                affected = df_clean[is_outlier].copy()
+                df_clean.loc[is_outlier, col] = median
+                affected["__Action__"] = f"Outlier replaced in '{col}' with median: {median}"
+                logs.append(affected)
+                
+    print("Rows after cleaning:", len(df_clean))
+    print("Original number of rows:", len(df_raw))
+    print("Total outliers replaced:", sum([(df["__Action__"] == "Outlier replaced").sum() for df in logs if "__Action__" in df]))
+    print("Number of log entries:", len(logs))
+    for col in numeric_cols:
+        Q1 = df_clean[col].quantile(0.25)
+        Q3 = df_clean[col].quantile(0.75)
+        IQR = Q3 - Q1
+        lower = Q1 - 1.5 * IQR
+        upper = Q3 + 1.5 * IQR
+        outlier_count = ((df_clean[col] < lower) | (df_clean[col] > upper)).sum()
+        print(f"{col}: {outlier_count} outliers")
 
+    
+                
     return df_clean, cleaning_log
