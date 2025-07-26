@@ -4,3 +4,4 @@ numpy
 plotly
 babel
 statsmodels
+scikit-learn
