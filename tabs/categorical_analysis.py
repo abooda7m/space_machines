@@ -101,20 +101,9 @@ def render(df):
 
     st.markdown("---")
 
-    # 1. Missions by Target Type (Bar)
-    st.subheader("🔭 Missions by Target Type")
-    target_counts = df["Target Type"].value_counts().sort_values(ascending=False).nlargest(10)
-    fig1 = px.bar(
-        x=target_counts.index,
-        y=target_counts.values,
-        labels={"x": "Target Type", "y": "Number of Missions"},
-        title="Top Target Types"
-    )
-    st.plotly_chart(fig1, use_container_width=True)
-
-
-
-    # 3. Mission Types Over the Years
+    # -------------------------------------------------------
+    # 1. Mission Types Over the Years
+    # -------------------------------------------------------
     st.subheader("📅 Missions by Type Over the Years")
     missions_by_type = df.groupby(["Launch Year", "Mission Type"]).size().reset_index(name="Count")
     missions_by_type = missions_by_type.sort_values("Count", ascending=False)
@@ -124,11 +113,14 @@ def render(df):
         y="Count",
         color="Mission Type",
         title="Mission Types per Year",
-        labels={"Count": "Number of Missions"}
+        labels={"Count": "Number of Missions"},
+      
     )
     st.plotly_chart(fig3, use_container_width=True)
 
-    # 4. Avg. Success Rate per Mission Type
+    # -------------------------------------------------------
+    # 2. Avg. Success Rate per Mission Type
+    # -------------------------------------------------------
     st.subheader("✅ Avg. Success Rate per Mission Type")
     if "Mission Type" in df.columns and "Mission Success (%)" in df.columns:
         success_by_type = df.groupby("Mission Type")["Mission Success (%)"].mean().sort_values(ascending=False)
@@ -139,8 +131,10 @@ def render(df):
             title="Success Rate by Mission Type"
         )
         st.plotly_chart(fig4, use_container_width=True)
-
-    # 5. Distribution of Missions by Target Type (Pie)
+        
+    # -------------------------------------------------------
+    # 3. Distribution of Missions by Target Type (Pie)
+    # -------------------------------------------------------
     st.subheader("🧭 Distribution of Missions by Target Type")
     pie_counts = df['Target Type'].value_counts().sort_values(ascending=False).reset_index()
     pie_counts.columns = ['Target Type', 'Count']

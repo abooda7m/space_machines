@@ -34,16 +34,25 @@ def render(df):
 
     # --- Variable Roles ---
     columns_info = [
-        {"Column": "Rocket_Cost", "Role": "Dependent", "Depends_On": "Mission_Duration, Payload_Mass, Launch_Date"},
-        {"Column": "Mission_Status", "Role": "Dependent", "Depends_On": "Organisation, Mission_Type, Rocket, Rocket_Cost"},
-        {"Column": "Organisation", "Role": "Independent", "Depends_On": "-"},
-        {"Column": "Mission_Type", "Role": "Independent", "Depends_On": "-"},
-        {"Column": "Rocket", "Role": "Independent", "Depends_On": "-"},
-        {"Column": "Country", "Role": "Independent", "Depends_On": "-"},
-        {"Column": "Payload_Mass", "Role": "Independent", "Depends_On": "-"},
-        {"Column": "Mission_Duration", "Role": "Independent", "Depends_On": "-"},
-        {"Column": "Launch_Date", "Role": "Independent", "Depends_On": "-"},
-    ]
+       {"Column": "Mission ID", "Role": "Independent", "Depends_On": "-"},
+       {"Column": "Mission Name", "Role": "Independent", "Depends_On": "-"},
+       {"Column": "Launch Date", "Role": "Independent", "Depends_On": "-"},
+       {"Column": "Target Type", "Role": "Independent", "Depends_On": "-"},
+       {"Column": "Target Name", "Role": "Independent", "Depends_On": "-"},
+       {"Column": "Mission Type", "Role": "Independent", "Depends_On": "-"},
+       {"Column": "Distance from Earth (light-years)", "Role": "Independent", "Depends_On": "-"},
+       {"Column": "Mission Duration (years)", "Role": "Dependent", "Depends_On": "Distance from Earth (light-years), Mission Type"},
+       {"Column": "Mission Cost (billion USD)", "Role": "Dependent", "Depends_On": "Mission Duration, Payload Weight, Mission Type, Launch Date, Crew Size"},
+       {"Column": "Scientific Yield (points)", "Role": "Dependent", "Depends_On": "Mission Duration, Mission Type"},
+       {"Column": "Crew Size", "Role": "Independent", "Depends_On": "-"},
+       {"Column": "Mission Success (%)", "Role": "Dependent", "Depends_On": "Mission Type, Launch Vehicle, Mission Cost"},
+       {"Column": "Fuel Consumption (tons)", "Role": "Dependent", "Depends_On": "Distance from Earth, Payload Weight"},
+       {"Column": "Payload Weight (tons)", "Role": "Dependent", "Depends_On": "Crew Size, Mission Type"},
+       {"Column": "Launch Vehicle", "Role": "Independent", "Depends_On": "-"},
+       {"Column": "Risk", "Role": "Dependent", "Depends_On": "Payload Weight, Distance from Earth, Mission Type"},
+       {"Column": "Scientific_Yield_Per_Year", "Role": "Dependent", "Depends_On": "Scientific Yield, Mission Duration"},
+       {"Column": "Cost_Per_Crew_Member", "Role": "Dependent", "Depends_On": "Mission Cost, Crew Size"}
+    ]   
     columns_df = pd.DataFrame(columns_info)
 
     # Split into dependent and independent
@@ -52,10 +61,11 @@ def render(df):
 
     # --- Display Dependent Variables ---
     st.subheader("🧮 Dependent Variables")
-    st.dataframe(dependent_vars, use_container_width=True)
+    st.dataframe(dependent_vars.reset_index(drop=True).rename_axis('').set_index(pd.Index(range(1, len(dependent_vars)+1))), use_container_width=True)
     st.caption("These variables are influenced by one or more independent features.")
 
     # --- Display Independent Variables ---
     st.subheader("🎯 Independent Variables")
-    st.dataframe(independent_vars, use_container_width=True)
+    st.dataframe(independent_vars.reset_index(drop=True).rename_axis('').set_index(pd.Index(range(1, len(independent_vars)+1))), use_container_width=True)
+
     st.caption("These variables serve as inputs or predictors for modeling.")
