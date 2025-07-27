@@ -50,7 +50,8 @@ project/
 │
 ├── landingPage.py                # Streamlit app entry point
 ├── data/
-│   └── space_missions_dataset.csv
+│   ├── space_missions_dataset.csv
+|   └── load_data.py              # load and cleaning data
 │
 ├── tabs/
 │   ├── data_overview.py         # Dataset description
