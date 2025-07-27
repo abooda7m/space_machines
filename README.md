@@ -37,6 +37,12 @@ Space missions are complex operations influenced by numerous factors like cost, 
 
 ---
 
+### 🤖 Model Overview  
+
+This project utilizes a **Linear Regression** model to predict the success rate of space missions based on parameters like mission duration, distance, crew size, cost, and risk level. The model was selected for its simplicity, efficiency, and interpretability. It achieved an **R² score of 0.84** and an **RMSE of 4.09**, indicating strong predictive performance.
+
+---
+
 ## 🛠️ Project Structure
 
 ```
